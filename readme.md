@@ -1,19 +1,29 @@
 # GitHub Actions Git
 
-A collection of GitHub actions for Git projects.
+A collection of GitHub actions.
 
-## Example Playbook
+## Create or Update Tag
+
+This action will create a new git tag. If the tag already exists it will be overwritten (requires force-push).
+
+### Example
 
 ```yaml
-  - name: Build code
-    uses: aboutbits/github-actions-git/xxx@v1
+  - name: Checkout source code
+    uses: actions/checkout@v3
+    
+  - name: Tag Deployment
+    uses: aboutbits/github-actions-git/create-or-update-tag@v1
     with:
-      xxx-version: ${{ env.NODE_VERSION }}
+      tag-name: 'prod'
+      message: 'Deployed to Prod'
+      user-name: 'AboutBits'
+      user-email: 'info@aboutbits.it'
 ```
 
 ## Versioning
 
-In order to have a verioning in place and working, create leightweight tags that point to the appropriate minor release versions.
+In order to have a versioning in place and working, create lightweight tags that point to the appropriate minor release versions.
 
 Creating a new minor release:
 

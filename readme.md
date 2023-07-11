@@ -2,9 +2,9 @@
 
 A collection of GitHub actions.
 
-## Create or Update Git Tag
-This action will crate a new tag. If the tag already exists it will be overwritten (requires force-push).  
-The tag will be created for the commit sha that matches `${{ github.sha }}`
+## Create or Update Tag
+
+This action will create a new git tag. If the tag already exists it will be overwritten (requires force-push).
 
 ### Example
 
@@ -13,7 +13,7 @@ The tag will be created for the commit sha that matches `${{ github.sha }}`
     uses: actions/checkout@v3
     
   - name: Tag Deployment
-    uses: aboutbits/github-actions-git/create-or-update-git-tag@v1
+    uses: aboutbits/github-actions-git/create-or-update-tag@v1
     with:
       tag-name: 'prod'
       message: 'Deployed to Prod'

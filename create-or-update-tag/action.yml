@@ -1,4 +1,4 @@
-name: 'Create or update a git-tag'
+name: 'Create or update a git tag'
 description: 'Create a new tag or update it.'
 
 inputs:

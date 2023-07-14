@@ -1,12 +1,14 @@
 # GitHub Actions Git
 
-A collection of GitHub actions.
+A collection of Git related GitHub actions.
 
-## Create or Update Tag
+## Actions
+
+### Create or Update Tag
 
 This action will create a new git tag. If the tag already exists it will be overwritten (requires force-push).
 
-### Example
+#### Example
 
 ```yaml
   - name: Checkout source code
@@ -20,6 +22,19 @@ This action will create a new git tag. If the tag already exists it will be over
       user-name: 'AboutBits'
       user-email: 'info@aboutbits.it'
 ```
+
+#### Inputs
+
+The following inputs can be used as `step.with` keys:
+
+| Name                | Required/Default | Description                              |
+|---------------------|------------------|------------------------------------------|
+| `tag-name`          | required         | The name of the tag to create            |
+| `user-name`         | required         | User name for GIT to use                 |
+| `user-email`        | required         | User email for GIT to use                |
+| `message`           | (empty)          | An optional message to go with the tag   |
+
+
 
 ## Versioning
 

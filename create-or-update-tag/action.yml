@@ -1,19 +1,19 @@
 name: 'Create or update a git tag'
-description: 'Create a new tag or update it.'
+description: 'Create a new tag or update it'
 
 inputs:
   tag-name:
+    description: 'The name of the tag to create'
     required: true
-    description: 'The name of the tag to create.'
   user-name:
+    description: 'User name for GIT to use'
     required: true
-    description: 'User name for GIT to use.'
   user-email:
+    description: 'User email for GIT to use'
     required: true
-    description: 'User email for GIT to use.'
   message:
+    description: 'An optional message to go with the tag'
     default: ''
-    description: 'A message to go with the tag.'
 
 runs:
   using: "composite"

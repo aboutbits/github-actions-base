@@ -13,7 +13,7 @@ inputs:
     description: 'User email for GIT to use.'
   message:
     default: ''
-    description: 'A message to go with the tag.'
+    description: 'An optional message to go with the tag.'
 
 runs:
   using: "composite"

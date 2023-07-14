@@ -25,7 +25,7 @@ This action will create a new git tag. If the tag already exists it will be over
 
 #### Inputs
 
-Following inputs can be used as `step.with` keys
+The following inputs can be used as `step.with` keys:
 
 | Name                | Required/Default | Description                              |
 |---------------------|------------------|------------------------------------------|

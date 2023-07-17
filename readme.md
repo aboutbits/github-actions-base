@@ -1,10 +1,10 @@
-# GitHub Actions Git
+# GitHub Actions Base
 
-A collection of Git related GitHub actions.
+A collection of basic GitHub actions.
 
 ## Actions
 
-### Create or Update Tag
+### Create or Update Git Tag
 
 This action will create a new git tag. If the tag already exists it will be overwritten (requires force-push).
 
@@ -15,7 +15,7 @@ This action will create a new git tag. If the tag already exists it will be over
     uses: actions/checkout@v3
     
   - name: Tag Deployment
-    uses: aboutbits/github-actions-git/create-or-update-tag@v1
+    uses: aboutbits/github-actions-base/git-create-or-update-tag@v1
     with:
       tag-name: 'prod'
       message: 'Deployed to Prod'
@@ -33,6 +33,36 @@ The following inputs can be used as `step.with` keys:
 | `user-name`         | required         | User name for GIT to use                 |
 | `user-email`        | required         | User email for GIT to use                |
 | `message`           | (empty)          | An optional message to go with the tag   |
+
+### Comment GitHub Issue
+
+This action will leave a comment on a GitHub issue.
+
+#### Example
+
+```yaml
+  - name: Checkout source code
+    uses: actions/checkout@v3
+    
+  - name: Comment issue
+    uses: aboutbits/github-actions-base/github-comment-issue@v1
+    with:
+      owner: ${{ github.repository_owner }}
+      repository: ${{ github.repository }}
+      issue-number: ${{ github.event.pull_request.number }}
+      message: "Some message"
+```
+
+#### Inputs
+
+The following inputs can be used as `step.with` keys:
+
+| Name                | Required/Default | Description                              |
+|---------------------|------------------|------------------------------------------|
+| `owner`             | required         | The owner of the repository              |
+| `repository`        | required         | The name of the repository               |
+| `issue-number`      | required         | The number of the issue                  |
+| `message`           | required         | The message of the comment               |
 
 
 

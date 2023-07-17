@@ -47,8 +47,6 @@ This action will leave a comment on a GitHub issue.
   - name: Comment issue
     uses: aboutbits/github-actions-base/github-comment-issue@v1
     with:
-      owner: ${{ github.repository_owner }}
-      repository: ${{ github.repository }}
       issue-number: ${{ github.event.pull_request.number }}
       message: "Some message"
 ```
@@ -59,8 +57,6 @@ The following inputs can be used as `step.with` keys:
 
 | Name                | Required/Default | Description                              |
 |---------------------|------------------|------------------------------------------|
-| `owner`             | required         | The owner of the repository              |
-| `repository`        | required         | The name of the repository               |
 | `issue-number`      | required         | The number of the issue                  |
 | `message`           | required         | The message of the comment               |
 

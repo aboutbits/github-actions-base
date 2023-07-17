@@ -2,12 +2,6 @@ name: 'Comment GitHub Issue'
 description: 'Leave a comment on a GitHub issue'
 
 inputs:
-  owner:
-    description: 'The owner of the repository'
-    required: true
-  respository:
-    description: 'The name of the repository'
-    required: true
   issue-number:
     description: 'The number of the issue'
     required: true
@@ -23,7 +17,7 @@ runs:
         script: |
           github.rest.issues.createComment({
             issue_number: ${{ inputs.issue-number }},
-            owner: '${{ inputs.owner }}',
-            repo: '${{ inputs.respository }}',
+            owner: context.repo.owner,
+            repo: context.repo.repo,
             body: '${{ inputs.message }}'
           })

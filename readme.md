@@ -49,6 +49,7 @@ The following inputs can be used as `step.with` keys:
 
 | Name                | Required/Default | Description                              |
 |---------------------|------------------|------------------------------------------|
+| `github-token`      | required         | The GitHub token used to authenticate    |
 | `issue-number`      | required         | The number of the issue                  |
 | `message`           | required         | The message of the comment               |
 

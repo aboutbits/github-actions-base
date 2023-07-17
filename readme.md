@@ -30,31 +30,6 @@ The following inputs can be used as `step.with` keys:
 | `user-email`        | required         | User email for GIT to use                |
 | `message`           | (empty)          | An optional message to go with the tag   |
 
-### Comment GitHub Issue
-
-This action will leave a comment on a GitHub issue.
-
-#### Example
-
-```yaml
-  - uses: aboutbits/github-actions-base/github-comment-issue@v1
-    with:
-      issue-number: ${{ github.event.pull_request.number }}
-      message: "Some message"
-```
-
-#### Inputs
-
-The following inputs can be used as `step.with` keys:
-
-| Name                | Required/Default | Description                              |
-|---------------------|------------------|------------------------------------------|
-| `github-token`      | required         | The GitHub token used to authenticate    |
-| `issue-number`      | required         | The number of the issue                  |
-| `message`           | required         | The message of the comment               |
-
-
-
 ## Versioning
 
 In order to have a versioning in place and working, create lightweight tags that point to the appropriate minor release versions.

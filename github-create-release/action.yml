@@ -2,8 +2,8 @@ name: 'Create a GitHub release'
 description: 'Create a new GitHub release'
 
 inputs:
-  version:
-    description: 'The version of the release'
+  tag-name:
+    description: 'The tag name of the release'
     required: true
 
 runs:
@@ -16,7 +16,7 @@ runs:
           github.rest.repos.createRelease({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            tag_name: 'v${{ inputs.version }}',
-            name: 'v${{ inputs.version }}',
-            prerelease: '${{ inputs.version }}'.includes('-')
+            tag_name: 'v${{ inputs.tag-name }}',
+            name: 'v${{ inputs.tag-name }}',
+            prerelease: '${{ inputs.tag-name }}'.includes('-')
           })

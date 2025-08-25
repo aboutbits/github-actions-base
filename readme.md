@@ -72,14 +72,14 @@ The following inputs can be used as `step.with` keys:
 
 ### Create GitHub Release
 
-This action will create a new GitHub release for a given tag, that is named like the version with a leading "v" (e.g. version "2.4.8" -> tag "v2.4.8").
+This action will create a new GitHub release for a given tag.
 
 #### Example
 
 ```yaml
   - uses: aboutbits/github-actions-base/github-create-release@v2
     with:
-      version: '2.4.8'
+      tag-name: 'v2.4.8'
 ```
 
 #### Inputs

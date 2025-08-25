@@ -46,6 +46,29 @@ The following inputs can be used as `step.with` keys:
 |---------------------|------------------|--------------------|
 | `message`           | required         | The commit message |
 
+### Create Tag
+
+This action will create a new Git tag.
+
+#### Example
+
+```yaml
+  - uses: aboutbits/github-actions-base/git-create-tag@v2
+    with:
+      tag-name: 'prod'
+      message: 'Deployed to Prod'
+      user-name: 'AboutBits'
+      user-email: 'info@aboutbits.it'
+```
+
+#### Inputs
+
+The following inputs can be used as `step.with` keys:
+
+| Name                | Required/Default | Description                              |
+|---------------------|------------------|------------------------------------------|
+| `tag-name`          | required         | The name of the tag to create            |
+| `message`           | (empty)          | An optional message to go with the tag   |
 
 ### Create or Update Tag
 
@@ -69,8 +92,6 @@ The following inputs can be used as `step.with` keys:
 | Name                | Required/Default | Description                              |
 |---------------------|------------------|------------------------------------------|
 | `tag-name`          | required         | The name of the tag to create            |
-| `user-name`         | required         | User name for GIT to use                 |
-| `user-email`        | required         | User email for GIT to use                |
 | `message`           | (empty)          | An optional message to go with the tag   |
 
 ## Versioning

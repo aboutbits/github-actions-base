@@ -1,5 +1,5 @@
-name: 'Create a tag'
-description: 'Create a new tag'
+name: 'Create or update a tag'
+description: 'Create a new tag or update it'
 
 inputs:
   tag-name:
@@ -12,7 +12,9 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - run: git tag --delete refs/tags/${{ inputs.tag-name }} 2>/dev/null || true
+      shell: bash
     - run: git tag -a ${{ inputs.tag-name }} ${{ github.sha }} -m "${{ inputs.message }}"
       shell: bash
-    - run: git push origin refs/tags/${{ inputs.tag-name }}
+    - run: git push origin refs/tags/${{ inputs.tag-name }} --force
       shell: bash

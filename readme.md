@@ -26,14 +26,14 @@ The following inputs can be used as `step.with` keys:
 | `user-name`         | required (AboutBits Tech)    | User name for GIT to use                 |
 | `user-email`        | required (tech@aboutbits.it) | User email for GIT to use                |
 
-### Add All and Commit
+### Push Changes
 
-This action will create all changes and commit them.
+This action will add all changes, commit them and push it.
 
 #### Example
 
 ```yaml
-  - uses: aboutbits/github-actions-base/git-add-all-and-commit@v2
+  - uses: aboutbits/github-actions-base/git-commit-and-push-all@v2
     with:
       message: 'Commit message'
 ```
@@ -45,30 +45,6 @@ The following inputs can be used as `step.with` keys:
 | Name                | Required/Default | Description        |
 |---------------------|------------------|--------------------|
 | `message`           | required         | The commit message |
-
-### Create Tag
-
-This action will create a new Git tag.
-
-#### Example
-
-```yaml
-  - uses: aboutbits/github-actions-base/git-create-tag@v2
-    with:
-      tag-name: 'prod'
-      message: 'Deployed to Prod'
-      user-name: 'AboutBits'
-      user-email: 'info@aboutbits.it'
-```
-
-#### Inputs
-
-The following inputs can be used as `step.with` keys:
-
-| Name                | Required/Default | Description                              |
-|---------------------|------------------|------------------------------------------|
-| `tag-name`          | required         | The name of the tag to create            |
-| `message`           | (empty)          | An optional message to go with the tag   |
 
 ### Create or Update Tag
 

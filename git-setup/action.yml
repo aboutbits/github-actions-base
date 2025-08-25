@@ -5,11 +5,11 @@ inputs:
   user-name:
     description: 'User name for GIT to use'
     required: true
-    default: 'AboutBits Tech'
+    default: 'github-actions[bot]'
   user-email:
     description: 'User email for GIT to use'
     required: true
-    default: 'tech@aboutbits.it'
+    default: 'github-actions[bot]@users.noreply.github.com'
 
 runs:
   using: "composite"

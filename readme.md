@@ -4,14 +4,57 @@ A collection of basic GitHub actions.
 
 ## Actions
 
-### Create or Update Git Tag
+### Setup Git
 
-This action will create a new git tag. If the tag already exists it will be overwritten (requires force-push).
+This action will set up Git.
 
 #### Example
 
 ```yaml
-  - uses: aboutbits/github-actions-base/git-create-or-update-tag@v1
+  - uses: aboutbits/github-actions-base/git-setup@v2
+    with:
+      user-name: 'AboutBits'
+      user-email: 'info@aboutbits.it'
+```
+
+#### Inputs
+
+The following inputs can be used as `step.with` keys:
+
+| Name                | Required/Default             | Description                              |
+|---------------------|------------------------------|------------------------------------------|
+| `user-name`         | required (AboutBits Tech)    | User name for GIT to use                 |
+| `user-email`        | required (tech@aboutbits.it) | User email for GIT to use                |
+
+### Add All and Commit
+
+This action will create all changes and commit them.
+
+#### Example
+
+```yaml
+  - uses: aboutbits/github-actions-base/git-add-all-and-commit@v2
+    with:
+      message: 'Commit message'
+```
+
+#### Inputs
+
+The following inputs can be used as `step.with` keys:
+
+| Name                | Required/Default | Description        |
+|---------------------|------------------|--------------------|
+| `message`           | required         | The commit message |
+
+
+### Create or Update Tag
+
+This action will create a new Git tag. If the tag already exists it will be overwritten (requires force-push).
+
+#### Example
+
+```yaml
+  - uses: aboutbits/github-actions-base/git-create-or-update-tag@v2
     with:
       tag-name: 'prod'
       message: 'Deployed to Prod'
@@ -37,16 +80,16 @@ In order to have a versioning in place and working, create lightweight tags that
 Creating a new minor release:
 
 ```bash
-git tag v1
+git tag v2
 git push --tags
 ```
 
 Replacing an already existing minor release:
 
 ```bash
-git tag -d v1
-git push origin :refs/tags/v1
-git tag v1
+git tag -d v2
+git push origin :refs/tags/v2
+git tag v2
 git push --tags
 ```
 

@@ -1,15 +1,9 @@
-name: 'Create or update a git tag'
+name: 'Create or update a tag'
 description: 'Create a new tag or update it'
 
 inputs:
   tag-name:
     description: 'The name of the tag to create'
-    required: true
-  user-name:
-    description: 'User name for GIT to use'
-    required: true
-  user-email:
-    description: 'User email for GIT to use'
     required: true
   message:
     description: 'An optional message to go with the tag'
@@ -18,10 +12,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - run: |
-        git config --global user.name '${{ inputs.user-name }}'
-        git config --global user.email '${{ inputs.user-email }}'
-      shell: bash
     - run: git tag --delete refs/tags/${{ inputs.tag-name }} 2>/dev/null || true
       shell: bash
     - run: git tag -a ${{ inputs.tag-name }} ${{ github.sha }} -m "${{ inputs.message }}"

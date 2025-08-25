@@ -1,0 +1,15 @@
+name: 'Add all and commit'
+description: 'Add all and commit changes'
+
+inputs:
+  message:
+    description: 'The commit message'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - run: git commit -a -m "${{ inputs.message }}"
+      shell: bash
+    - run: git push origin
+      shell: bash

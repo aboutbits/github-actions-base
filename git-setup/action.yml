@@ -1,0 +1,20 @@
+name: 'Setup Git'
+description: 'Setup Git with user name and email'
+
+inputs:
+  user-name:
+    description: 'User name for GIT to use'
+    required: true
+    default: 'AboutBits Tech'
+  user-email:
+    description: 'User email for GIT to use'
+    required: true
+    default: 'tech@aboutbits.it'
+
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        git config --global user.name '${{ inputs.user-name }}'
+        git config --global user.email '${{ inputs.user-email }}'
+      shell: bash

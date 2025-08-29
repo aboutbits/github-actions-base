@@ -1,5 +1,4 @@
 name: 'Create a tag'
-description: 'Create a new tag'
 
 inputs:
   tag-name:

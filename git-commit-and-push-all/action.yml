@@ -1,5 +1,4 @@
 name: 'Add all, commit and push changes'
-description: 'Add all changes, commit them and push it.'
 
 inputs:
   message:

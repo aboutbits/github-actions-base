@@ -86,10 +86,29 @@ This action will create a new GitHub release for a given tag.
 
 The following inputs can be used as `step.with` keys:
 
-| Name                | Required/Default | Description                              |
-|---------------------|------------------|------------------------------------------|
-| `tag-name`          | required         | The name of the tag to create            |
-| `message`           | (empty)          | An optional message to go with the tag   |
+| Name       | Required/Default | Description                   |
+|------------|------------------|-------------------------------|
+| `tag-name` | required         | The name of the tag to create |
+
+### Comment on a GitHub PR
+
+This action will add a comment to a GitHub PR.
+
+#### Example
+
+```yaml
+  - uses: aboutbits/github-actions-base/github-pr-comment@v2
+    with:
+      comment: 'Your comment'
+```
+
+#### Inputs
+
+The following inputs can be used as `step.with` keys:
+
+| Name      | Required/Default | Description             |
+|-----------|------------------|-------------------------|
+| `comment` | required         | The text of the comment |
 
 
 ## Versioning

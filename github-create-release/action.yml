@@ -1,5 +1,4 @@
 name: 'Create a GitHub release'
-description: 'Create a new GitHub release'
 
 inputs:
   tag-name:

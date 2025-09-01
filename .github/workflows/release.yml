@@ -19,6 +19,7 @@ jobs:
       - name: Update versions in readme.md
         run: |
           sed -i "s|\(uses:.*@v\)[0-9]\+|\1${{ github.event.inputs.version }}|g" readme.md
+      - uses: aboutbits/github-actions-base/git-setup@v2
       - uses: aboutbits/github-actions-base/git-commit-and-push-all@v2
         with:
           message: '${{ github.event.inputs.version }}'

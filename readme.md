@@ -113,7 +113,7 @@ The following inputs can be used as `step.with` keys:
 
 ## Build & Publish
 
-To build and publish the chart, visit the GitHub Actions page of the repository and trigger the workflow "Release Package" manually.
+To build and publish the action, visit the GitHub Actions page of the repository and trigger the workflow "Release Package" manually.
 
 ## Information
 

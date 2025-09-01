@@ -25,4 +25,4 @@ jobs:
           message: '${{ github.event.inputs.version }}'
       - uses: aboutbits/github-actions-base/git-create-or-update-tag@v2
         with:
-          tag-name: 'v${{ github.event.inputs.version }}'
+          tag-name: '${{ github.event.inputs.version }}'

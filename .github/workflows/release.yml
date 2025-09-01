@@ -1,0 +1,27 @@
+name: Release Package
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version (eg: v1, v2, v3)"
+        type: string
+        required: true
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+      - name: Update versions in readme.md
+        run: |
+          sed -i "s|\(uses:.*@v\)[0-9]\+|\1${{ github.event.inputs.version }}|g" readme.md
+      - uses: aboutbits/github-actions-base/git-commit-and-push-all@v2
+        with:
+          message: '${{ github.event.inputs.version }}'
+      - uses: aboutbits/github-actions-base/git-create-or-update-tag@v2
+        with:
+          tag-name: 'v${{ github.event.inputs.version }}'

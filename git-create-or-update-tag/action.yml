@@ -1,4 +1,4 @@
-name: 'Create a tag'
+name: 'Create or update a tag'
 
 inputs:
   tag-name:
@@ -13,5 +13,5 @@ runs:
   steps:
     - run: git tag -a ${{ inputs.tag-name }} ${{ github.sha }} -m "${{ inputs.message }}"
       shell: bash
-    - run: git push origin refs/tags/${{ inputs.tag-name }}
+    - run: git push origin refs/tags/${{ inputs.tag-name }} --force
       shell: bash

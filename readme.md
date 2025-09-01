@@ -11,7 +11,7 @@ This action will set up Git.
 #### Example
 
 ```yaml
-  - uses: aboutbits/github-actions-base/git-setup@vv2
+  - uses: aboutbits/github-actions-base/git-setup@v2
     with:
       user-name: 'AboutBits'
       user-email: 'info@aboutbits.it'
@@ -33,7 +33,7 @@ This action will add all changes, commit them and push it.
 #### Example
 
 ```yaml
-  - uses: aboutbits/github-actions-base/git-commit-and-push-all@vv2
+  - uses: aboutbits/github-actions-base/git-commit-and-push-all@v2
     with:
       message: 'Commit message'
 ```
@@ -53,7 +53,7 @@ This action will create a new Git tag. If the tag already exists it will be over
 #### Example
 
 ```yaml
-  - uses: aboutbits/github-actions-base/git-create-or-update-tag@vv2
+  - uses: aboutbits/github-actions-base/git-create-or-update-tag@v2
     with:
       tag-name: 'prod'
       message: 'Deployed to Prod'
@@ -77,7 +77,7 @@ This action will create a new GitHub release for a given tag.
 #### Example
 
 ```yaml
-  - uses: aboutbits/github-actions-base/github-create-release@vv2
+  - uses: aboutbits/github-actions-base/github-create-release@v2
     with:
       tag-name: 'v2.4.8'
 ```
@@ -97,7 +97,7 @@ This action will add a comment to a GitHub PR.
 #### Example
 
 ```yaml
-  - uses: aboutbits/github-actions-base/github-pr-comment@vv2
+  - uses: aboutbits/github-actions-base/github-pr-comment@v2
     with:
       comment: 'Your comment'
 ```

@@ -17,5 +17,6 @@ runs:
             repo: context.repo.repo,
             tag_name: '${{ inputs.tag-name }}',
             name: '${{ inputs.tag-name }}',
-            prerelease: '${{ inputs.tag-name }}'.includes('-')
+            prerelease: '${{ inputs.tag-name }}'.includes('-'),
+            generate_release_notes: true
           })

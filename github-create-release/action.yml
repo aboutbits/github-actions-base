@@ -4,6 +4,10 @@ inputs:
   tag-name:
     description: 'The tag name of the release'
     required: true
+  generate-release-notes:
+    description: 'Automatically generate release notes from commits'
+    required: false
+    default: 'false'
 
 runs:
   using: "composite"
@@ -18,5 +22,5 @@ runs:
             tag_name: '${{ inputs.tag-name }}',
             name: '${{ inputs.tag-name }}',
             prerelease: '${{ inputs.tag-name }}'.includes('-'),
-            generate_release_notes: true
+            generate_release_notes: '${{ inputs.generate-release-notes }}' === 'true'
           })

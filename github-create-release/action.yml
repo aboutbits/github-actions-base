@@ -4,7 +4,11 @@ inputs:
   tag-name:
     description: 'The tag name of the release'
     required: true
-  generate-release-notes:
+  release-description:
+    description: 'The description text of the release'
+    required: false
+    default: ''
+  release-notes-generation:
     description: 'Automatically generate release notes from commits'
     required: false
     default: 'false'
@@ -21,6 +25,7 @@ runs:
             repo: context.repo.repo,
             tag_name: '${{ inputs.tag-name }}',
             name: '${{ inputs.tag-name }}',
+            body: '${{ inputs.release-description }}',
             prerelease: '${{ inputs.tag-name }}'.includes('-'),
-            generate_release_notes: '${{ inputs.generate-release-notes }}' === 'true'
+            generate_release_notes: '${{ inputs.release-notes-generation }}' === 'true'
           })

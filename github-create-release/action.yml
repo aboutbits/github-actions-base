@@ -17,7 +17,7 @@ runs:
   using: "composite"
   steps:
     - name: Create GitHub release
-      uses: actions/github-script@v7
+      uses: actions/github-script@v9
       env:
         RELEASE_DESCRIPTION: ${{ inputs.release-description }}
       with:

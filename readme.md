@@ -91,6 +91,7 @@ The following inputs can be used as `step.with` keys:
 | `tag-name`                 | required         | The name of the tag to create                                     |
 | `release-description`      | ''               | The description text of the release.                              |
 | `release-notes-generation` | 'false'          | An option that indicates if the release notes should be generated |
+| `prerelease`               | 'auto'           | 'true', 'false' or 'auto' (a tag with a hyphen is a pre-release)  |
 
 ### Comment on a GitHub PR
 

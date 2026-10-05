@@ -113,6 +113,36 @@ The following inputs can be used as `step.with` keys:
 |-----------|------------------|-------------------------|
 | `comment` | required         | The text of the comment |
 
+### Keep risk:low only on reviewed code
+
+This action removes the `risk:low` label from a pull request when its change differs from the one the self-review recorded. The `pr-ready` skill of [aboutbits/agent-kit](https://github.com/aboutbits/agent-kit) sets the label and writes a hidden `<!-- self-review: <sha> <branch-id> -->` marker into the PR body. The action computes the branch id the same way: a rebase keeps it, a change to the reviewed code does not. Without the marker, it removes the label too.
+
+#### Example
+
+```yaml
+on:
+  pull_request:
+    types: [synchronize, edited, labeled]
+
+jobs:
+  review-freshness:
+    if: contains(github.event.pull_request.labels.*.name, 'risk:low')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: aboutbits/github-actions-base/github-pr-review-freshness@v2
+```
+
+#### Inputs
+
+The following inputs can be used as `step.with` keys:
+
+| Name    | Required/Default    | Description                                     |
+|---------|---------------------|-------------------------------------------------|
+| `label` | optional (risk:low) | The label that allows a merge without more review |
+
 
 ## Build & Publish
 

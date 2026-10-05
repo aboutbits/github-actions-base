@@ -1,0 +1,44 @@
+name: 'Keep risk:low only on reviewed code'
+description: 'Removes the risk:low label from a pull request when its change differs from the one the self-review recorded in the PR body.'
+
+inputs:
+  label:
+    description: 'The label that allows a merge without more review'
+    required: false
+    default: 'risk:low'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Check out the pull request with its history
+      uses: actions/checkout@v7
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+        fetch-depth: 0
+
+    - name: Compare the change with the reviewed one
+      uses: actions/github-script@v9
+      env:
+        ACTION_PATH: ${{ github.action_path }}
+        LABEL: ${{ inputs.label }}
+      with:
+        script: |
+          const { execFileSync } = require('node:child_process')
+          const { branchId } = require(`${process.env.ACTION_PATH}/branch-id.js`)
+          const pr = context.payload.pull_request
+          const label = process.env.LABEL
+          if (!pr || !pr.labels.some((l) => l.name === label)) {
+            core.info(`No ${label} label: nothing to check.`)
+            return
+          }
+          const marker = /<!-- self-review: ([0-9a-f]{7,40}) ([0-9a-f]{64}) -->/.exec(pr.body ?? '')
+          const base = execFileSync('git', ['merge-base', `origin/${pr.base.ref}`, 'HEAD'], { encoding: 'utf8' }).trim()
+          const id = branchId(process.cwd(), base)
+          if (marker && marker[2] === id) {
+            core.info(`${label} stays: the change is the one the self-review recorded.`)
+            return
+          }
+          await github.rest.issues.removeLabel({ owner: context.repo.owner, repo: context.repo.repo, issue_number: pr.number, name: label })
+          core.notice(marker
+            ? `Removed ${label}: the change differs from the one the self-review recorded. A new self-review round restores it.`
+            : `Removed ${label}: the PR body has no self-review marker.`)

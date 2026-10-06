@@ -3,12 +3,15 @@
 // for every changed file that is not generated, its diff against the merge-base with zero context,
 // whitespace and blank lines ignored, import and package lines dropped, and every hunk left empty
 // dropped, put through `git patch-id --stable`; then the SHA-256 of the sorted lines "<path>\t<id>\n".
+// A binary file's id is "binary:" and its blob id at the head, or "binary:deleted". Every diff runs
+// with the options in DIFF, so the git config of the machine cannot change an id.
 const { execFileSync } = require('node:child_process')
 const { createHash } = require('node:crypto')
 
 const GENERATED =
   /(^|\/)(generated|build|dist|node_modules|vendor)\/|(^|\/)(package-lock\.json|yarn\.lock|pnpm-lock\.yaml|bun\.lock|bun\.lockb|go\.sum|Cargo\.lock|composer\.lock|Gemfile\.lock|poetry\.lock)$|\.(pb\.go|g\.dart|freezed\.dart|min\.js|min\.css)$|(^|\/)__snapshots__\//
 const NOISE = /^[+-]\s*(import|package)\s/
+const DIFF = ['diff', '--no-color', '--no-ext-diff', '--diff-algorithm=myers', '-M']
 
 const git = (cwd, args, input) => execFileSync('git', args, { cwd, input, encoding: 'utf8', maxBuffer: 1 << 28 })
 
@@ -48,13 +51,24 @@ function patchId(cwd, diff) {
   return (git(cwd, ['patch-id', '--stable'], diff).split(' ')[0] ?? '').trim()
 }
 
+function fileId(cwd, base, head, path) {
+  if (/^-\t-\t/.test(git(cwd, [...DIFF, '--numstat', base, head, '--', path]))) {
+    let blob = 'deleted'
+    try {
+      blob = execFileSync('git', ['rev-parse', `${head}:${path}`], { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim()
+    } catch {}
+    return `binary:${blob}`
+  }
+  return patchId(cwd, normalize(git(cwd, [...DIFF, '-U0', '-w', '--ignore-blank-lines', base, head, '--', path])))
+}
+
 function branchId(cwd, base, head = 'HEAD') {
-  const lines = git(cwd, ['diff', '--name-only', base, head])
+  const lines = git(cwd, [...DIFF, '--name-only', base, head])
     .split('\n')
     .filter(Boolean)
     .sort()
     .filter((path) => !isGenerated(cwd, path))
-    .map((path) => `${path}\t${patchId(cwd, normalize(git(cwd, ['diff', '-U0', '-w', '--ignore-blank-lines', base, head, '--', path])))}\n`)
+    .map((path) => `${path}\t${fileId(cwd, base, head, path)}\n`)
     .join('')
   return createHash('sha256').update(lines).digest('hex')
 }

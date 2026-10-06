@@ -1,11 +1,15 @@
-name: 'Keep risk:low only on reviewed code'
-description: 'Removes the risk:low label from a pull request when its change differs from the one the self-review recorded in the PR body.'
+name: 'Keep the self-review labels in step with the code'
+description: 'Removes risk:low from a pull request when its change differs from the one the self-review recorded in the PR body, and marks such a pull request with self-review:stale.'
 
 inputs:
   label:
     description: 'The label that allows a merge without more review'
     required: false
     default: 'risk:low'
+  stale-label:
+    description: 'The label that says the code changed after the self-review'
+    required: false
+    default: 'self-review:stale'
 
 runs:
   using: "composite"
@@ -21,24 +25,34 @@ runs:
       env:
         ACTION_PATH: ${{ github.action_path }}
         LABEL: ${{ inputs.label }}
+        STALE_LABEL: ${{ inputs.stale-label }}
       with:
         script: |
           const { execFileSync } = require('node:child_process')
           const { branchId } = require(`${process.env.ACTION_PATH}/branch-id.js`)
           const pr = context.payload.pull_request
-          const label = process.env.LABEL
-          if (!pr || !pr.labels.some((l) => l.name === label)) {
-            core.info(`No ${label} label: nothing to check.`)
-            return
-          }
+          if (!pr) return
+          const low = process.env.LABEL, stale = process.env.STALE_LABEL
+          const has = (name) => pr.labels.some((l) => l.name === name)
+          const issue = { owner: context.repo.owner, repo: context.repo.repo, issue_number: pr.number }
           const marker = /<!-- self-review: ([0-9a-f]{7,40}) ([0-9a-f]{64}) -->/.exec(pr.body ?? '')
-          const base = execFileSync('git', ['merge-base', `origin/${pr.base.ref}`, 'HEAD'], { encoding: 'utf8' }).trim()
-          const id = branchId(process.cwd(), base)
-          if (marker && marker[2] === id) {
-            core.info(`${label} stays: the change is the one the self-review recorded.`)
-            return
+          let current = false
+          if (marker) {
+            const base = execFileSync('git', ['merge-base', `origin/${pr.base.ref}`, 'HEAD'], { encoding: 'utf8' }).trim()
+            current = marker[2] === branchId(process.cwd(), base)
           }
-          await github.rest.issues.removeLabel({ owner: context.repo.owner, repo: context.repo.repo, issue_number: pr.number, name: label })
-          core.notice(marker
-            ? `Removed ${label}: the change differs from the one the self-review recorded. A new self-review round restores it.`
-            : `Removed ${label}: the PR body has no self-review marker.`)
+          if (current) core.info('The change is the one the self-review recorded.')
+          if (!current && has(low)) {
+            await github.rest.issues.removeLabel({ ...issue, name: low })
+            core.notice(marker
+              ? `Removed ${low}: the change differs from the one the self-review recorded. A new self-review round restores it.`
+              : `Removed ${low}: the PR body has no self-review marker.`)
+          }
+          if (marker && !current && !has(stale)) {
+            await github.rest.issues.addLabels({ ...issue, labels: [stale] })
+            core.notice(`Added ${stale}: the change differs from the one the self-review recorded. A new self-review round clears it.`)
+          }
+          if ((current || !marker) && has(stale)) {
+            await github.rest.issues.removeLabel({ ...issue, name: stale })
+            core.notice(current ? `Removed ${stale}: the self-review is current again.` : `Removed ${stale}: the PR body has no self-review marker.`)
+          }

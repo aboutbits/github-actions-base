@@ -113,20 +113,27 @@ The following inputs can be used as `step.with` keys:
 |-----------|------------------|-------------------------|
 | `comment` | required         | The text of the comment |
 
-### Keep risk:low only on reviewed code
+### Keep the self-review labels in step with the code
 
-This action removes the `risk:low` label from a pull request when its change differs from the one the self-review recorded. The `pr-ready` skill of [aboutbits/agent-kit](https://github.com/aboutbits/agent-kit) sets the label and writes a hidden `<!-- self-review: <sha> <branch-id> -->` marker into the PR body. The action computes the branch id the same way: a rebase keeps it, a change to the reviewed code does not. Without the marker, it removes the label too.
+This action keeps two labels true to the code of a pull request after a self-review. The `pr-ready` skill of [aboutbits/agent-kit](https://github.com/aboutbits/agent-kit) writes a hidden `<!-- self-review: <sha> <branch-id> -->` marker into the PR body, and may set `risk:low`. The action computes the branch id the same way: a rebase keeps it, a change to the reviewed code does not.
+
+- When the change differs from the reviewed one, it removes `risk:low` and adds `self-review:stale`.
+- When the change is the reviewed one again, for example after a new self-review round, it removes `self-review:stale`.
+- Without the marker, it removes both labels: the pull request has no self-review.
 
 #### Example
 
 ```yaml
 on:
   pull_request:
-    types: [synchronize, edited, labeled]
+    types: [opened, reopened, synchronize, edited, labeled]
 
 jobs:
   review-freshness:
-    if: contains(github.event.pull_request.labels.*.name, 'risk:low')
+    if: >-
+      contains(github.event.pull_request.body, '<!-- self-review:')
+      || contains(github.event.pull_request.labels.*.name, 'risk:low')
+      || contains(github.event.pull_request.labels.*.name, 'self-review:stale')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -139,9 +146,10 @@ jobs:
 
 The following inputs can be used as `step.with` keys:
 
-| Name    | Required/Default    | Description                                     |
-|---------|---------------------|-------------------------------------------------|
-| `label` | optional (risk:low) | The label that allows a merge without more review |
+| Name          | Required/Default             | Description                                                |
+|---------------|------------------------------|------------------------------------------------------------|
+| `label`       | optional (risk:low)          | The label that allows a merge without more review          |
+| `stale-label` | optional (self-review:stale) | The label that says the code changed after the self-review |
 
 
 ## Build & Publish

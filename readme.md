@@ -134,7 +134,7 @@ jobs:
       contains(github.event.pull_request.body, '<!-- self-review:')
       || contains(github.event.pull_request.labels.*.name, 'risk:low')
       || contains(github.event.pull_request.labels.*.name, 'self-review:stale')
-    runs-on: ${{ replace_with_your_runner }}
+    # runs-on: <the runner your other workflows use>
     permissions:
       contents: read
       pull-requests: write

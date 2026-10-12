@@ -120,6 +120,7 @@ This action keeps two labels true to the code of a pull request after a self-rev
 - When the change differs from the reviewed one, it removes `risk:low` and adds `self-review:stale`.
 - When the change is the reviewed one again, for example after a new self-review round, it removes `self-review:stale`.
 - Without the marker, it removes both labels: the pull request has no self-review.
+- On the top pull request of a stack that the self-review reviewed whole, the marker also names the stack's base: `<!-- self-review: <sha> <branch-id> base=<branch> -->`. Its `risk:low` covers the whole stack, so the action compares the change from that base, not from the pull request's own base. A change to a lower pull request reaches the top with the next restack, and then removes the label.
 
 #### Example
 

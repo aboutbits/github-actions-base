@@ -35,10 +35,12 @@ runs:
           const low = process.env.LABEL, stale = process.env.STALE_LABEL
           const has = (name) => pr.labels.some((l) => l.name === name)
           const issue = { owner: context.repo.owner, repo: context.repo.repo, issue_number: pr.number }
-          const marker = /<!-- self-review: ([0-9a-f]{7,40}) ([0-9a-f]{64}) -->/.exec(pr.body ?? '')
+          // The top PR of a stack the self-review reviewed whole names the stack's base: its label
+          // covers the whole stack, so the change is compared from that base, not from the PR's own.
+          const marker = /<!-- self-review: ([0-9a-f]{7,40}) ([0-9a-f]{64})(?: base=([A-Za-z0-9._\/-]+))? -->/.exec(pr.body ?? '')
           let current = false
           if (marker) {
-            const base = execFileSync('git', ['merge-base', `origin/${pr.base.ref}`, 'HEAD'], { encoding: 'utf8' }).trim()
+            const base = execFileSync('git', ['merge-base', `origin/${marker[3] ?? pr.base.ref}`, 'HEAD'], { encoding: 'utf8' }).trim()
             current = marker[2] === branchId(process.cwd(), base)
           }
           if (current) core.info('The change is the one the self-review recorded.')

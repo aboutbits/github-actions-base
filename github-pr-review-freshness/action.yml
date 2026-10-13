@@ -1,0 +1,89 @@
+name: 'Keep the self-review labels in step with the code'
+description: 'Removes risk:low from a pull request when its change differs from the one the self-review recorded in the PR body, and marks such a pull request with self-review:stale.'
+
+inputs:
+  label:
+    description: 'The label that allows a merge without more review'
+    required: false
+    default: 'risk:low'
+  stale-label:
+    description: 'The label that says the code changed after the self-review'
+    required: false
+    default: 'self-review:stale'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Read the head of the pull request as it is now
+      id: pr
+      uses: actions/github-script@v9
+      with:
+        script: |
+          // The event carries the pull request as it was when the event fired. Runs for one pull
+          // request can wait behind each other, so the run checks out the head the PR has now.
+          const pr = context.payload.pull_request
+          if (!pr) return
+          const { data } = await github.rest.pulls.get({ owner: context.repo.owner, repo: context.repo.repo, pull_number: pr.number })
+          core.setOutput('sha', data.head.sha)
+
+    - name: Check out the pull request with its history
+      if: steps.pr.outputs.sha != ''
+      uses: actions/checkout@v7
+      with:
+        ref: ${{ steps.pr.outputs.sha }}
+        fetch-depth: 0
+
+    - name: Compare the change with the reviewed one
+      if: steps.pr.outputs.sha != ''
+      uses: actions/github-script@v9
+      env:
+        ACTION_PATH: ${{ github.action_path }}
+        LABEL: ${{ inputs.label }}
+        STALE_LABEL: ${{ inputs.stale-label }}
+        SHA: ${{ steps.pr.outputs.sha }}
+      with:
+        script: |
+          const { execFileSync } = require('node:child_process')
+          const { branchId } = require(`${process.env.ACTION_PATH}/branch-id.js`)
+          const low = process.env.LABEL, stale = process.env.STALE_LABEL
+          const issue = { owner: context.repo.owner, repo: context.repo.repo, issue_number: context.payload.pull_request.number }
+          // Decide on the body and the labels the pull request has now, not on the event's: two
+          // runs that start seconds apart would otherwise each act on what the other changed.
+          const { data: pr } = await github.rest.pulls.get({ owner: issue.owner, repo: issue.repo, pull_number: issue.issue_number })
+          if (pr.head.sha !== process.env.SHA) {
+            core.info(`The pull request moved on to ${pr.head.sha}; the run for that push decides.`)
+            return
+          }
+          const has = (name) => pr.labels.some((l) => l.name === name)
+          // A label that is already gone is what this run wanted, for example when another run or a
+          // person removed it a moment earlier.
+          const remove = async (name) => {
+            try {
+              await github.rest.issues.removeLabel({ ...issue, name })
+              return true
+            } catch (e) {
+              if (e.status === 404) return false
+              throw e
+            }
+          }
+          // The top PR of a stack the self-review reviewed whole names the stack's base: its label
+          // covers the whole stack, so the change is compared from that base, not from the PR's own.
+          const marker = /<!-- self-review: ([0-9a-f]{7,40}) ([0-9a-f]{64})(?: base=([A-Za-z0-9._\/-]+))? -->/.exec(pr.body ?? '')
+          let current = false
+          if (marker) {
+            const base = execFileSync('git', ['merge-base', `origin/${marker[3] ?? pr.base.ref}`, 'HEAD'], { encoding: 'utf8' }).trim()
+            current = marker[2] === branchId(process.cwd(), base)
+          }
+          if (current) core.info('The change is the one the self-review recorded.')
+          if (!current && has(low) && await remove(low)) {
+            core.notice(marker
+              ? `Removed ${low}: the change differs from the one the self-review recorded. A new self-review round restores it.`
+              : `Removed ${low}: the PR body has no self-review marker.`)
+          }
+          if (marker && !current && !has(stale)) {
+            await github.rest.issues.addLabels({ ...issue, labels: [stale] })
+            core.notice(`Added ${stale}: the change differs from the one the self-review recorded. A new self-review round clears it.`)
+          }
+          if ((current || !marker) && has(stale) && await remove(stale)) {
+            core.notice(current ? `Removed ${stale}: the self-review is current again.` : `Removed ${stale}: the PR body has no self-review marker.`)
+          }

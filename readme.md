@@ -121,6 +121,7 @@ This action keeps two labels true to the code of a pull request after a self-rev
 - When the change is the reviewed one again, for example after a new self-review round, it removes `self-review:stale`.
 - Without the marker, it removes both labels: the pull request has no self-review.
 - On the top pull request of a stack that the self-review reviewed whole, the marker also names the stack's base: `<!-- self-review: <sha> <branch-id> base=<branch> -->`. Its `risk:low` covers the whole stack, so the action compares the change from that base, not from the pull request's own base. A change to a lower pull request reaches the top with the next restack, and then removes the label.
+- One change can fire several events at once, such as `edited` and `labeled` from one `gh pr edit`. The example's `concurrency` group runs them one at a time for each pull request, and each run reads the pull request as it is when it starts, not as the event saw it. A label that is already gone counts as removed.
 
 #### Example
 
@@ -135,6 +136,9 @@ jobs:
       contains(github.event.pull_request.body, '<!-- self-review:')
       || contains(github.event.pull_request.labels.*.name, 'risk:low')
       || contains(github.event.pull_request.labels.*.name, 'self-review:stale')
+    concurrency:
+      group: review-freshness-${{ github.event.pull_request.number }}
+      cancel-in-progress: false
     # runs-on: <the runner your other workflows use>
     permissions:
       contents: read

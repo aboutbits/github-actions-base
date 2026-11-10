@@ -95,7 +95,7 @@ The following inputs can be used as `step.with` keys:
 
 ### Comment on a GitHub PR
 
-This action will add a comment to a GitHub PR.
+This action will add a comment to a GitHub PR. The comment can have more than one line and can contain any character.
 
 #### Example
 

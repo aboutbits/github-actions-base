@@ -1,8 +1,9 @@
 // The branch id that the self-review skill records in a PR body
 // (aboutbits/agent-kit, skills/self-review/scripts/review-state.ts). Both must compute it the same way:
 // for every changed file that is not generated, its diff against the merge-base with zero context,
-// whitespace and blank lines ignored, import and package lines dropped, and every hunk left empty
-// dropped, put through `git patch-id --stable`; then the SHA-256 of the sorted lines "<path>\t<id>\n".
+// import and package lines dropped, and every hunk left empty dropped, put through
+// `git patch-id --verbatim`; then the SHA-256 of the sorted lines "<path>\t<id>\n". Every whitespace
+// character counts: in YAML, Python or a Makefile, indentation is meaning.
 // A binary file's id is "binary:" and its blob id at the head, or "binary:deleted". Every diff runs
 // with the options in DIFF, so the git config of the machine cannot change an id.
 const { execFileSync } = require('node:child_process')
@@ -46,9 +47,10 @@ function normalize(diff) {
   return out.join('\n')
 }
 
+// `--verbatim` hashes every whitespace character, which `--stable` alone strips, and implies `--stable`.
 function patchId(cwd, diff) {
   if (!/^[+-](?![+-]{2} )/m.test(diff)) return ''
-  return (git(cwd, ['patch-id', '--stable'], diff).split(' ')[0] ?? '').trim()
+  return (git(cwd, ['patch-id', '--verbatim'], diff).split(' ')[0] ?? '').trim()
 }
 
 function fileId(cwd, base, head, path) {
@@ -59,7 +61,7 @@ function fileId(cwd, base, head, path) {
     } catch {}
     return `binary:${blob}`
   }
-  return patchId(cwd, normalize(git(cwd, [...DIFF, '-U0', '-w', '--ignore-blank-lines', base, head, '--', path])))
+  return patchId(cwd, normalize(git(cwd, [...DIFF, '-U0', base, head, '--', path])))
 }
 
 function branchId(cwd, base, head = 'HEAD') {

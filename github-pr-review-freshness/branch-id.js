@@ -1,5 +1,5 @@
 // The branch id that the self-review skill records in a PR body
-// (aboutbits/agent-kit, skills/self-review/scripts/review-state.ts). Both must compute it the same way:
+// (aboutbits/agent-kit, plugins/review/skills/self-review/scripts/review-state.ts). Both must compute it the same way:
 // for every changed file that is not generated, its diff against the merge-base with zero context,
 // import and package lines dropped, and every hunk left empty dropped, put through
 // `git patch-id --verbatim`; then the SHA-256 of the sorted lines "<path>\t<id>\n". Every whitespace
